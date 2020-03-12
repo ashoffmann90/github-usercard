@@ -24,7 +24,13 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  'devjaymoe',
+  'Perezented',
+  'janecyyu',
+  'leachcoding',
+  'dortega5185',
+];
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -43,13 +49,81 @@ const followersArray = [];
     <p>Bio: {users bio}</p>
   </div>
 </div>
-
 */
 
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
+function followerCards(obj) {
+  const card = document.createElement('div'),
+        userImg = document.createElement('img'),
+        cardInfo = document.createElement('div'),
+          name = document.createElement('h3'),
+          username = document.createElement('p'),
+          location = document.createElement('p'),
+          profile = document.createElement('p'),
+            profLink = document.createElement('a'),
+          followers = document.createElement('p'),
+          following = document.createElement('p'),
+          bio = document.createElement('p');
+
+  card.appendChild(userImg)
+  card.appendChild(cardInfo)
+    cardInfo.appendChild(name)
+    cardInfo.appendChild(username)
+    cardInfo.appendChild(location)
+    cardInfo.appendChild(profile)
+      profile.appendChild(profLink)
+    cardInfo.appendChild(followers)
+    cardInfo.appendChild(following)
+    cardInfo.appendChild(bio)
+
+  card.classList.add('card')
+  userImg.src = obj.avatar_url
+  cardInfo.classList.add('card-info')
+  name.classList.add('name')
+  name.textContent = obj.name
+  username.classList.add('username')
+  username.textContent = obj.login
+  location.textContent = `Location: ${obj.location}`
+  profile.textContent = `Profile: ${obj.html_url}`
+  profLink.textContent = `${obj.html_url}`
+  profLink.href = obj.html_url
+  followers.textContent = `Followers: ${obj.followers}`
+  following.textContent = `Following: ${obj.following}`
+  bio.textContent = obj.bio
+
+  return card
+}
+const divForCards = document.querySelector('.cards')
+
+axios.get('https://api.github.com/users/ashoffmann90') //making request to GitHub API through AXIOS
+.then(response => {
+  // console.log(response.data) //response accessing login key in data object
+  divForCards.appendChild(followerCards(response.data))
+})
+.catch(error => {
+  console.log('oopsie',error)
+})
+
+
+axios.get('https://api.github.com/users/ashoffmann90/followers')
+.then(response => {
+  console.log(response.data)
+  const loginArray = Object.values(response.data)
+  console.log(loginArray)
+})
+.catch(error => {
+  console.log('whooooops', error)
+})
+
+
+ followersArray.forEach(user => {
+   axios.get(`https://api.github.com/users/${user}`)
+   .then(data => {
+     const newCard = followerCards(data.data),
+          people = document.querySelector('.cards')
+          people.append(newCard)
+   })
+   .catch(error => {
+     console.log('WHOOOOOORPSSS', error)
+   })
+ })
+ 
